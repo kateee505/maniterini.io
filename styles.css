@@ -1,0 +1,102 @@
+:root {
+  --bg: #111;
+  --card: #eaeaea;
+  --yellow: #fde68a;
+}
+
+* {
+  box-sizing: border-box;
+  font-family: system-ui, sans-serif;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  padding: 20px;
+}
+
+.app {
+  display: grid;
+  gap: 20px;
+  max-width: 900px;
+  margin: auto;
+}
+
+.card {
+  background: var(--card);
+  border-radius: 16px;
+  padding: 20px;
+}
+
+.welcome {
+  background: linear-gradient(180deg,#b9fbc0,#cdb4db);
+}
+
+.btn {
+  border: none;
+  padding: 12px;
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.btn-dark {
+  background: #333;
+  color: #fff;
+}
+
+.btn-yellow {
+  background: var(--yellow);
+}
+
+.chart {
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  margin: 20px auto;
+  background: #ddd;
+}
+
+/* MODAL */
+.modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.6);
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-box {
+  background: white;
+  padding: 20px;
+  border-radius: 16px;
+  width: 280px;
+  position: relative;
+}
+
+.modal-box input,
+.modal-box select {
+  width: 100%;
+  margin-bottom: 10px;
+  padding: 10px;
+}
+
+.close {
+  position: absolute;
+  right: 10px;
+  top: 6px;
+  font-size: 22px;
+  cursor: pointer;
+}
+
+/* HELP */
+.help {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: var(--bg);
+  color: white;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
