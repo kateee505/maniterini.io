@@ -2,6 +2,7 @@
   --bg: #111;
   --card: #eaeaea;
   --yellow: #fde68a;
+  --gradient: linear-gradient(180deg,#b9fbc0,#cdb4db);
 }
 
 * {
@@ -16,10 +17,10 @@ body {
 }
 
 .app {
-  display: grid;
-  gap: 20px;
   max-width: 900px;
   margin: auto;
+  display: grid;
+  gap: 20px;
 }
 
 .card {
@@ -29,7 +30,7 @@ body {
 }
 
 .welcome {
-  background: linear-gradient(180deg,#b9fbc0,#cdb4db);
+  background: var(--gradient);
 }
 
 .btn {
@@ -41,7 +42,7 @@ body {
 
 .btn-dark {
   background: #333;
-  color: #fff;
+  color: white;
 }
 
 .btn-yellow {
@@ -54,6 +55,25 @@ body {
   border-radius: 50%;
   margin: 20px auto;
   background: #ddd;
+}
+
+/* LEGEND */
+.legend {
+  margin: 10px 0 20px;
+  font-size: 14px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  margin-right: 8px;
 }
 
 /* MODAL */
@@ -70,7 +90,7 @@ body {
   background: white;
   padding: 20px;
   border-radius: 16px;
-  width: 280px;
+  width: 300px;
   position: relative;
 }
 
