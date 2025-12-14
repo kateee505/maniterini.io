@@ -3,126 +3,119 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Tēriņu Pārskats</title>
+  <title>Tēriņu pārskats</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
-<div class="app">
-
-  <!-- WELCOME -->
-  <section class="card welcome">
+<!-- ================= HOME ================= -->
+<section class="page active" id="home">
+  <div class="card welcome">
     <h1>Sveiki!</h1>
     <p>Ko tu esi iztērējis?</p>
-    <button class="btn btn-dark" onclick="goToChart()">Uz tēriņu pārskatu</button>
-  </section>
+    <button class="btn btn-dark" onclick="go('chart')">Uz tēriņu pārskatu</button>
+  </div>
 
-  <!-- CHART -->
-  <section class="card stats" id="chart">
+  <div class="card welcome">
+    <h2><span class="icon">⚙️</span> Iestatījumi</h2>
+    <button class="btn btn-dark" onclick="go('settings')">Atvērt</button>
+  </div>
+</section>
+
+<!-- ================= CHART ================= -->
+<section class="page" id="chart">
+  <div class="card">
     <h2>Tēriņu sadalījums</h2>
     <div class="chart" id="pie"></div>
     <div class="legend" id="legend"></div>
-    <button class="btn btn-yellow" onclick="openModal('expenseModal')">+ Pievienot tēriņus</button>
-  </section>
+    <button class="btn btn-yellow" onclick="go('add')">+ Pievienot tēriņus</button>
+    <button class="btn btn-light" onclick="go('home')">Atpakaļ</button>
+  </div>
+</section>
 
-  <!-- SETTINGS -->
-  <section class="card welcome">
-    <h2>Iestatījumi</h2>
-    <button class="btn btn-dark" onclick="openModal('settingsModal')">Atvērt iestatījumus</button>
-  </section>
-
-</div>
-
-<!-- ADD EXPENSE -->
-<div class="modal" id="expenseModal">
-  <div class="modal-box">
-    <h3>Pievienot tēriņus</h3>
+<!-- ================= ADD ================= -->
+<section class="page" id="add">
+  <div class="card">
+    <h2>Pievienot tēriņus</h2>
     <input type="number" id="amount" placeholder="Summa €">
     <select id="category"></select>
     <button class="btn btn-dark" onclick="addExpense()">Saglabāt</button>
-    <button class="btn btn-light" onclick="closeModal()">Atpakaļ</button>
+    <button class="btn btn-light" onclick="go('chart')">Atpakaļ</button>
   </div>
-</div>
+</section>
 
-<!-- SETTINGS MAIN -->
-<div class="modal" id="settingsModal">
-  <div class="modal-box">
-    <h3>Iestatījumi</h3>
-    <button class="btn btn-dark" onclick="openModal('themeModal')">Tēma</button>
-    <button class="btn btn-dark" onclick="openModal('listModal')">Saraksta iestatījumi</button>
-    <button class="btn btn-light" onclick="closeModal()">Atpakaļ</button>
+<!-- ================= SETTINGS ================= -->
+<section class="page" id="settings">
+  <div class="card welcome">
+    <h2>Iestatījumi</h2>
+    <button class="btn btn-dark" onclick="go('theme')">Tēma</button>
+    <button class="btn btn-dark" onclick="go('list')">Saraksta iestatījumi</button>
+    <button class="btn btn-light" onclick="go('home')">Atpakaļ</button>
   </div>
-</div>
+</section>
 
-<!-- THEME -->
-<div class="modal" id="themeModal">
-  <div class="modal-box">
-    <h3>Tēmas izvēle</h3>
+<!-- ================= THEME ================= -->
+<section class="page" id="theme">
+  <div class="card">
+    <h2>Tēmas izvēle</h2>
     <button class="btn btn-dark" onclick="setTheme('dark')">Tumšā</button>
     <button class="btn btn-light" onclick="setTheme('light')">Gaišā</button>
-    <button class="btn btn-light" onclick="closeModal()">Atpakaļ</button>
+    <button class="btn btn-light" onclick="go('settings')">Atpakaļ</button>
   </div>
-</div>
+</section>
 
-<!-- LIST SETTINGS -->
-<div class="modal" id="listModal">
-  <div class="modal-box">
-    <h3>Saraksta iestatījumi</h3>
+<!-- ================= LIST ================= -->
+<section class="page" id="list">
+  <div class="card">
+    <h2>Saraksta iestatījumi</h2>
     <label>
       <input type="checkbox" id="toggleAmounts" onchange="toggleAmounts()">
       Rādīt summas
     </label>
-    <button class="btn btn-light" onclick="closeModal()">Atpakaļ</button>
+    <button class="btn btn-light" onclick="go('settings')">Atpakaļ</button>
   </div>
-</div>
+</section>
 
 <script>
+/* ---------- DATA ---------- */
 const categories = {
-  Pirkumi: { v:0, c:"#60a5fa", i:"🛒" },
-  Online: { v:0, c:"#38bdf8", i:"💻" },
-  Ēdiens: { v:0, c:"#4ade80", i:"🍽" },
-  Abonementi:{ v:0, c:"#f87171", i:"📺" },
-  Komunālie:{ v:0, c:"#facc15", i:"🏠" },
-  Pārskaitījumi:{ v:0, c:"#c084fc", i:"💸" }
+  Pirkumi:{v:0,c:"#60a5fa",i:"🛒"},
+  Online:{v:0,c:"#38bdf8",i:"💻"},
+  Ēdiens:{v:0,c:"#4ade80",i:"🍽"},
+  Abonementi:{v:0,c:"#f87171",i:"📺"},
+  Komunālie:{v:0,c:"#facc15",i:"🏠"},
+  Pārskaitījumi:{v:0,c:"#c084fc",i:"💸"}
 };
 
 let showAmounts = JSON.parse(localStorage.getItem("showAmounts")) ?? true;
 
-function save() {
-  localStorage.setItem("data", JSON.stringify(categories));
-  localStorage.setItem("theme", document.body.dataset.theme);
-  localStorage.setItem("showAmounts", showAmounts);
+/* ---------- NAVIGATION ---------- */
+function go(id){
+  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
 }
 
-function load() {
-  const d = JSON.parse(localStorage.getItem("data"));
-  if (d) Object.keys(categories).forEach(k => categories[k].v = d[k].v);
-  setTheme(localStorage.getItem("theme") || "dark");
-  document.getElementById("toggleAmounts").checked = showAmounts;
-  update();
+/* ---------- THEME ---------- */
+function setTheme(t){
+  document.body.dataset.theme = t;
+  localStorage.setItem("theme", t);
 }
 
-function openModal(id) {
-  document.querySelectorAll(".modal").forEach(m=>m.style.display="none");
-  document.getElementById(id).style.display="flex";
-}
-
-function closeModal() {
-  document.querySelectorAll(".modal").forEach(m=>m.style.display="none");
-}
-
-function addExpense() {
+/* ---------- EXPENSE ---------- */
+function addExpense(){
   const a = +amount.value;
   const c = category.value;
   if(!a) return;
   categories[c].v += a;
-  save(); update(); closeModal();
+  save(); update(); go('chart');
 }
 
-function update() {
+/* ---------- CHART ---------- */
+function update(){
   const total = Object.values(categories).reduce((s,x)=>s+x.v,0);
   if(!total) return;
-  let cur=0, g=[], l="";
+
+  let cur=0,g=[],l="";
   Object.entries(categories).forEach(([n,o])=>{
     if(!o.v) return;
     let p=o.v/total*100;
@@ -138,15 +131,30 @@ function update() {
   legend.innerHTML=l;
 }
 
-function setTheme(t){document.body.dataset.theme=t;save();}
-function toggleAmounts(){showAmounts=!showAmounts;save();update();}
-function goToChart(){chart.scrollIntoView({behavior:"smooth"});}
+/* ---------- STORAGE ---------- */
+function save(){
+  localStorage.setItem("data", JSON.stringify(categories));
+  localStorage.setItem("showAmounts", showAmounts);
+}
 
-const category=document.getElementById("category");
+function load(){
+  const d = JSON.parse(localStorage.getItem("data"));
+  if(d) Object.keys(categories).forEach(k=>categories[k].v=d[k].v);
+  setTheme(localStorage.getItem("theme")||"dark");
+  toggleAmounts.checked = showAmounts;
+  update();
+}
+
+/* ---------- LIST ---------- */
+function toggleAmounts(){
+  showAmounts=!showAmounts;
+  save(); update();
+}
+
+/* ---------- INIT ---------- */
 Object.keys(categories).forEach(k=>{
   category.innerHTML+=`<option value="${k}">${categories[k].i} ${k}</option>`;
 });
-
 load();
 </script>
 
