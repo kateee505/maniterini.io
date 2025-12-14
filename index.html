@@ -14,138 +14,141 @@
   <section class="card welcome">
     <h1>Sveiki!</h1>
     <p>Ko tu esi iztērējis?</p>
-    <button class="btn btn-dark" onclick="goToChart()">
-      Uz tēriņu pārskatu
-    </button>
+    <button class="btn btn-dark" onclick="goToChart()">Uz tēriņu pārskatu</button>
   </section>
 
   <!-- CHART -->
   <section class="card stats" id="chart">
     <h2>Tēriņu sadalījums</h2>
-
     <div class="chart" id="pie"></div>
-
     <div class="legend" id="legend"></div>
-
-    <button class="btn btn-yellow" onclick="openModal()">
-      + Pievienot tēriņus
-    </button>
+    <button class="btn btn-yellow" onclick="openModal('expenseModal')">+ Pievienot tēriņus</button>
   </section>
 
   <!-- SETTINGS -->
   <section class="card welcome">
     <h2>Iestatījumi</h2>
-    <button class="btn btn-dark" onclick="openHelp()">
-      Palīdzība
-    </button>
+    <button class="btn btn-dark" onclick="openModal('settingsModal')">Atvērt iestatījumus</button>
   </section>
 
 </div>
 
-<!-- MODAL -->
-<div class="modal" id="modal">
+<!-- ADD EXPENSE -->
+<div class="modal" id="expenseModal">
   <div class="modal-box">
-    <span class="close" onclick="closeModal()">×</span>
     <h3>Pievienot tēriņus</h3>
-
     <input type="number" id="amount" placeholder="Summa €">
-
-    <select id="category">
-      <option value="Pirkumi">🛒 Pirkumi</option>
-      <option value="Online">💻 Online pirkumi</option>
-      <option value="Ēdiens">🍽 Ēdiens</option>
-      <option value="Abonementi">📺 Abonementi</option>
-      <option value="Komunālie">🏠 Komunālie maksājumi</option>
-      <option value="Pārskaitījumi">💸 Pārskaitījumi cilvēkiem</option>
-    </select>
-
-    <button class="btn btn-dark" onclick="addExpense()">
-      Saglabāt
-    </button>
+    <select id="category"></select>
+    <button class="btn btn-dark" onclick="addExpense()">Saglabāt</button>
+    <button class="btn btn-light" onclick="closeModal()">Atpakaļ</button>
   </div>
 </div>
 
-<!-- HELP -->
-<div class="help" id="help">
-  <h1>Mēs nezinām, kā jums palīdzēt</h1>
-  <button class="btn btn-dark" onclick="closeHelp()">Atgriezties</button>
+<!-- SETTINGS MAIN -->
+<div class="modal" id="settingsModal">
+  <div class="modal-box">
+    <h3>Iestatījumi</h3>
+    <button class="btn btn-dark" onclick="openModal('themeModal')">Tēma</button>
+    <button class="btn btn-dark" onclick="openModal('listModal')">Saraksta iestatījumi</button>
+    <button class="btn btn-light" onclick="closeModal()">Atpakaļ</button>
+  </div>
+</div>
+
+<!-- THEME -->
+<div class="modal" id="themeModal">
+  <div class="modal-box">
+    <h3>Tēmas izvēle</h3>
+    <button class="btn btn-dark" onclick="setTheme('dark')">Tumšā</button>
+    <button class="btn btn-light" onclick="setTheme('light')">Gaišā</button>
+    <button class="btn btn-light" onclick="closeModal()">Atpakaļ</button>
+  </div>
+</div>
+
+<!-- LIST SETTINGS -->
+<div class="modal" id="listModal">
+  <div class="modal-box">
+    <h3>Saraksta iestatījumi</h3>
+    <label>
+      <input type="checkbox" id="toggleAmounts" onchange="toggleAmounts()">
+      Rādīt summas
+    </label>
+    <button class="btn btn-light" onclick="closeModal()">Atpakaļ</button>
+  </div>
 </div>
 
 <script>
 const categories = {
-  Pirkumi: { value: 0, color: "#60a5fa", icon: "🛒", name: "Pirkumi" },
-  Online: { value: 0, color: "#38bdf8", icon: "💻", name: "Online pirkumi" },
-  Ēdiens: { value: 0, color: "#4ade80", icon: "🍽", name: "Ēdiens" },
-  Abonementi: { value: 0, color: "#f87171", icon: "📺", name: "Abonementi" },
-  Komunālie: { value: 0, color: "#facc15", icon: "🏠", name: "Komunālie maksājumi" },
-  Pārskaitījumi: { value: 0, color: "#c084fc", icon: "💸", name: "Pārskaitījumi cilvēkiem" }
+  Pirkumi: { v:0, c:"#60a5fa", i:"🛒" },
+  Online: { v:0, c:"#38bdf8", i:"💻" },
+  Ēdiens: { v:0, c:"#4ade80", i:"🍽" },
+  Abonementi:{ v:0, c:"#f87171", i:"📺" },
+  Komunālie:{ v:0, c:"#facc15", i:"🏠" },
+  Pārskaitījumi:{ v:0, c:"#c084fc", i:"💸" }
 };
 
-function openModal() {
-  modal.style.display = "flex";
+let showAmounts = JSON.parse(localStorage.getItem("showAmounts")) ?? true;
+
+function save() {
+  localStorage.setItem("data", JSON.stringify(categories));
+  localStorage.setItem("theme", document.body.dataset.theme);
+  localStorage.setItem("showAmounts", showAmounts);
+}
+
+function load() {
+  const d = JSON.parse(localStorage.getItem("data"));
+  if (d) Object.keys(categories).forEach(k => categories[k].v = d[k].v);
+  setTheme(localStorage.getItem("theme") || "dark");
+  document.getElementById("toggleAmounts").checked = showAmounts;
+  update();
+}
+
+function openModal(id) {
+  document.querySelectorAll(".modal").forEach(m=>m.style.display="none");
+  document.getElementById(id).style.display="flex";
 }
 
 function closeModal() {
-  modal.style.display = "none";
+  document.querySelectorAll(".modal").forEach(m=>m.style.display="none");
 }
 
 function addExpense() {
-  const amount = +amountInput.value;
-  const category = categorySelect.value;
-  if (!amount) return;
-
-  categories[category].value += amount;
-  updateChart();
-  closeModal();
+  const a = +amount.value;
+  const c = category.value;
+  if(!a) return;
+  categories[c].v += a;
+  save(); update(); closeModal();
 }
 
-function updateChart() {
-  const total = Object.values(categories).reduce((s,c)=>s+c.value,0);
-  if (!total) return;
-
-  let current = 0;
-  let gradient = [];
-  let legendHTML = "";
-
-  Object.values(categories).forEach(c => {
-    if (!c.value) return;
-    const start = current;
-    const percent = (c.value / total) * 100;
-    current += percent;
-
-    gradient.push(`${c.color} ${start}% ${current}%`);
-
-    legendHTML += `
-      <div class="legend-item">
-        <span class="dot" style="background:${c.color}"></span>
-        ${c.icon} ${c.name} — ${percent.toFixed(1)}%
-      </div>
-    `;
+function update() {
+  const total = Object.values(categories).reduce((s,x)=>s+x.v,0);
+  if(!total) return;
+  let cur=0, g=[], l="";
+  Object.entries(categories).forEach(([n,o])=>{
+    if(!o.v) return;
+    let p=o.v/total*100;
+    g.push(`${o.c} ${cur}% ${cur+p}%`);
+    cur+=p;
+    l+=`<div class="legend-item">
+      <span class="rect" style="background:${o.c}"></span>
+      ${o.i} ${n} — ${p.toFixed(1)}%
+      ${showAmounts?` (${o.v.toFixed(2)} €)`:``}
+    </div>`;
   });
-
-  pie.style.background = `conic-gradient(${gradient.join(",")})`;
-  legend.innerHTML = legendHTML;
+  pie.style.background=`conic-gradient(${g})`;
+  legend.innerHTML=l;
 }
 
-function goToChart() {
-  chart.scrollIntoView({ behavior: "smooth" });
-}
+function setTheme(t){document.body.dataset.theme=t;save();}
+function toggleAmounts(){showAmounts=!showAmounts;save();update();}
+function goToChart(){chart.scrollIntoView({behavior:"smooth"});}
 
-function openHelp() {
-  help.style.display = "flex";
-}
+const category=document.getElementById("category");
+Object.keys(categories).forEach(k=>{
+  category.innerHTML+=`<option value="${k}">${categories[k].i} ${k}</option>`;
+});
 
-function closeHelp() {
-  help.style.display = "none";
-}
-
-const modal = document.getElementById("modal");
-const pie = document.getElementById("pie");
-const legend = document.getElementById("legend");
-const amountInput = document.getElementById("amount");
-const categorySelect = document.getElementById("category");
+load();
 </script>
 
 </body>
 </html>
-
