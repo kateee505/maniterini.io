@@ -22,14 +22,18 @@
   <!-- CHART -->
   <section class="card stats" id="chart">
     <h2>Tēriņu sadalījums</h2>
+
     <div class="chart" id="pie"></div>
+
+    <div class="legend" id="legend"></div>
+
     <button class="btn btn-yellow" onclick="openModal()">
       + Pievienot tēriņus
     </button>
   </section>
 
   <!-- SETTINGS -->
-  <section class="card settings">
+  <section class="card welcome">
     <h2>Iestatījumi</h2>
     <button class="btn btn-dark" onclick="openHelp()">
       Palīdzība
@@ -45,10 +49,14 @@
     <h3>Pievienot tēriņus</h3>
 
     <input type="number" id="amount" placeholder="Summa €">
+
     <select id="category">
-      <option value="Pirkumi">Pirkumi</option>
-      <option value="Ēdiens">Ēdiens</option>
-      <option value="Abonementi">Abonementi</option>
+      <option value="Pirkumi">🛒 Pirkumi</option>
+      <option value="Online">💻 Online pirkumi</option>
+      <option value="Ēdiens">🍽 Ēdiens</option>
+      <option value="Abonementi">📺 Abonementi</option>
+      <option value="Komunālie">🏠 Komunālie maksājumi</option>
+      <option value="Pārskaitījumi">💸 Pārskaitījumi cilvēkiem</option>
     </select>
 
     <button class="btn btn-dark" onclick="addExpense()">
@@ -57,65 +65,87 @@
   </div>
 </div>
 
-<!-- HELP PAGE (FAKE PAGE) -->
+<!-- HELP -->
 <div class="help" id="help">
   <h1>Mēs nezinām, kā jums palīdzēt</h1>
   <button class="btn btn-dark" onclick="closeHelp()">Atgriezties</button>
 </div>
 
 <script>
-let data = {
-  Pirkumi: 0,
-  Ēdiens: 0,
-  Abonementi: 0
+const categories = {
+  Pirkumi: { value: 0, color: "#60a5fa", icon: "🛒", name: "Pirkumi" },
+  Online: { value: 0, color: "#38bdf8", icon: "💻", name: "Online pirkumi" },
+  Ēdiens: { value: 0, color: "#4ade80", icon: "🍽", name: "Ēdiens" },
+  Abonementi: { value: 0, color: "#f87171", icon: "📺", name: "Abonementi" },
+  Komunālie: { value: 0, color: "#facc15", icon: "🏠", name: "Komunālie maksājumi" },
+  Pārskaitījumi: { value: 0, color: "#c084fc", icon: "💸", name: "Pārskaitījumi cilvēkiem" }
 };
 
 function openModal() {
-  document.getElementById('modal').style.display = 'flex';
+  modal.style.display = "flex";
 }
 
 function closeModal() {
-  document.getElementById('modal').style.display = 'none';
+  modal.style.display = "none";
 }
 
 function addExpense() {
-  const amount = +document.getElementById('amount').value;
-  const category = document.getElementById('category').value;
-
+  const amount = +amountInput.value;
+  const category = categorySelect.value;
   if (!amount) return;
 
-  data[category] += amount;
+  categories[category].value += amount;
   updateChart();
   closeModal();
 }
 
 function updateChart() {
-  const total = data.Pirkumi + data.Ēdiens + data.Abonementi;
-  if (total === 0) return;
+  const total = Object.values(categories).reduce((s,c)=>s+c.value,0);
+  if (!total) return;
 
-  const p1 = data.Pirkumi / total * 100;
-  const p2 = data.Ēdiens / total * 100;
+  let current = 0;
+  let gradient = [];
+  let legendHTML = "";
 
-  document.getElementById('pie').style.background =
-    `conic-gradient(
-      #60a5fa 0% ${p1}%,
-      #4ade80 ${p1}% ${p1 + p2}%,
-      #f87171 ${p1 + p2}% 100%
-    )`;
+  Object.values(categories).forEach(c => {
+    if (!c.value) return;
+    const start = current;
+    const percent = (c.value / total) * 100;
+    current += percent;
+
+    gradient.push(`${c.color} ${start}% ${current}%`);
+
+    legendHTML += `
+      <div class="legend-item">
+        <span class="dot" style="background:${c.color}"></span>
+        ${c.icon} ${c.name} — ${percent.toFixed(1)}%
+      </div>
+    `;
+  });
+
+  pie.style.background = `conic-gradient(${gradient.join(",")})`;
+  legend.innerHTML = legendHTML;
 }
 
 function goToChart() {
-  document.getElementById('chart').scrollIntoView({behavior:'smooth'});
+  chart.scrollIntoView({ behavior: "smooth" });
 }
 
 function openHelp() {
-  document.getElementById('help').style.display = 'flex';
+  help.style.display = "flex";
 }
 
 function closeHelp() {
-  document.getElementById('help').style.display = 'none';
+  help.style.display = "none";
 }
+
+const modal = document.getElementById("modal");
+const pie = document.getElementById("pie");
+const legend = document.getElementById("legend");
+const amountInput = document.getElementById("amount");
+const categorySelect = document.getElementById("category");
 </script>
 
 </body>
 </html>
+
