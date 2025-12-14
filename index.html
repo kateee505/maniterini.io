@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="lv">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Tēriņu Pārskats</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div class="app">
+
+  <!-- WELCOME -->
+  <section class="card welcome">
+    <h1>Sveiki!</h1>
+    <p>Ko tu esi iztērējis?</p>
+    <button class="btn btn-dark" onclick="goToChart()">
+      Uz tēriņu pārskatu
+    </button>
+  </section>
+
+  <!-- CHART -->
+  <section class="card stats" id="chart">
+    <h2>Tēriņu sadalījums</h2>
+    <div class="chart" id="pie"></div>
+    <button class="btn btn-yellow" onclick="openModal()">
+      + Pievienot tēriņus
+    </button>
+  </section>
+
+  <!-- SETTINGS -->
+  <section class="card settings">
+    <h2>Iestatījumi</h2>
+    <button class="btn btn-dark" onclick="openHelp()">
+      Palīdzība
+    </button>
+  </section>
+
+</div>
+
+<!-- MODAL -->
+<div class="modal" id="modal">
+  <div class="modal-box">
+    <span class="close" onclick="closeModal()">×</span>
+    <h3>Pievienot tēriņus</h3>
+
+    <input type="number" id="amount" placeholder="Summa €">
+    <select id="category">
+      <option value="Pirkumi">Pirkumi</option>
+      <option value="Ēdiens">Ēdiens</option>
+      <option value="Abonementi">Abonementi</option>
+    </select>
+
+    <button class="btn btn-dark" onclick="addExpense()">
+      Saglabāt
+    </button>
+  </div>
+</div>
+
+<!-- HELP PAGE (FAKE PAGE) -->
+<div class="help" id="help">
+  <h1>Mēs nezinām, kā jums palīdzēt</h1>
+  <button class="btn btn-dark" onclick="closeHelp()">Atgriezties</button>
+</div>
+
+<script>
+let data = {
+  Pirkumi: 0,
+  Ēdiens: 0,
+  Abonementi: 0
+};
+
+function openModal() {
+  document.getElementById('modal').style.display = 'flex';
+}
+
+function closeModal() {
+  document.getElementById('modal').style.display = 'none';
+}
+
+function addExpense() {
+  const amount = +document.getElementById('amount').value;
+  const category = document.getElementById('category').value;
+
+  if (!amount) return;
+
+  data[category] += amount;
+  updateChart();
+  closeModal();
+}
+
+function updateChart() {
+  const total = data.Pirkumi + data.Ēdiens + data.Abonementi;
+  if (total === 0) return;
+
+  const p1 = data.Pirkumi / total * 100;
+  const p2 = data.Ēdiens / total * 100;
+
+  document.getElementById('pie').style.background =
+    `conic-gradient(
+      #60a5fa 0% ${p1}%,
+      #4ade80 ${p1}% ${p1 + p2}%,
+      #f87171 ${p1 + p2}% 100%
+    )`;
+}
+
+function goToChart() {
+  document.getElementById('chart').scrollIntoView({behavior:'smooth'});
+}
+
+function openHelp() {
+  document.getElementById('help').style.display = 'flex';
+}
+
+function closeHelp() {
+  document.getElementById('help').style.display = 'none';
+}
+</script>
+
+</body>
+</html>
